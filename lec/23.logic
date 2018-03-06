@@ -1,0 +1,152 @@
+; Basic facts and queries
+
+(fact (border NSW Q))
+
+(query (border NSW Q))
+(query (border NSW SA))
+
+
+; Variables
+
+(query (border NSW ?region))
+
+(fact (equal ?x ?x))
+
+(query (equal brian brian))
+(query (equal brian marvin))
+
+
+; Negation
+
+(query (not (border NSW SA)))
+(query (not (border NSW NT)))
+
+(query (not (equal brian marvin)))
+(query (not (equal brian ?who)))
+
+
+; Compound facts
+
+(fact (border NSW SA))
+(fact (border NSW V))
+(fact (border NT  Q))
+(fact (border NT  SA))
+(fact (border NT  WA))
+(fact (border Q   SA))
+(fact (border SA  WA))
+(fact (border SA  V))
+
+(fact (two-away ?r1 ?r2)
+      (border ?r1 ?mid)
+      (border ?mid ?r2)
+      (not (border ?r1 ?r2)))
+
+(query (two-away ?r1 ?r2))
+
+
+; Compound queries
+
+(query (two-away NSW ?region)
+       (two-away Q ?region))
+(query (two-away ?r1 ?r2)
+       (border NT ?r2))
+
+
+; Recursive facts
+
+(fact (connected ?r1 ?r2)
+      (border ?r1 ?r2))
+(fact (connected ?r1 ?r2)
+      (border ?r1 ?next)
+      (connected ?next ?r2))
+
+(query (connected NSW Q))
+(query (connected NSW WA))
+(query (connected ?r1 ?r2) (not (border ?r1 ?r2)) (not (two-away ?r1 ?r2)))
+
+(fact (border V T))
+
+(query (connected ?r1 ?r2) (not (border ?r1 ?r2)) (not (two-away ?r1 ?r2)))
+
+
+; Hierarchical facts
+
+(fact (australia (NSW NT Q SA T WA V)))
+
+(query (australia ?regions))
+(query (australia (?first . ?rest)))
+
+
+; Example: membership
+
+(fact (in ?elem (?elem . ?rest)))
+(fact (in ?elem (?first . ?rest))
+      (in ?elem ?rest))
+
+(query (in 1 (1 2 3 4)))
+(query (in 5 (1 2 3 4)))
+(query (in ?x (1 2 3 4)))
+
+
+; Example: appending lists
+
+(fact (append () ?lst ?lst))
+(fact (append (?first . ?rest) ?lst (?first . ?rest+lst))
+      (append ?rest ?lst ?rest+lst))
+
+(query (append (1 2) (3 4) (1 2 3 4)))
+(query (append (1 2) (3 4 5) (1 2 3 4)))
+(query (append ?lst1 ?lst2 (1 2 3 4)))
+
+
+; Map coloring #1
+
+(query (in ?NSW (red green blue))
+       (in ?NT  (red green blue))
+       (in ?Q   (red green blue))
+       (in ?SA  (red green blue))
+       (in ?T   (red green blue))
+       (in ?V   (red green blue))
+       (in ?WA  (red green blue))
+       (not (equal ?NSW ?Q))
+       (not (equal ?NSW ?SA))
+       (not (equal ?NSW ?V))
+       (not (equal ?NT  ?Q))
+       (not (equal ?NT  ?SA))
+       (not (equal ?NT  ?WA))
+       (not (equal ?Q   ?SA))
+       (not (equal ?SA  ?WA))
+       (not (equal ?SA  ?V)))
+
+
+; Map coloring #2
+; Note that this answer is slightly off because we added the V T border
+
+(fact (neighbor ?r1 ?r2)
+      (border ?r1 ?r2))
+(fact (neighbor ?r1 ?r2)
+      (border ?r2 ?r1))
+
+(fact (color red))
+(fact (color green))
+(fact (color blue))
+
+(fact (coloring () ()))
+(fact (coloring (?r . ?rest-regions) ((?r ?c) . ?rest-assign))
+      (coloring ?rest-regions ?rest-assign)
+      (color ?c)
+      (no-conflict (?r ?c) ?rest-assign))
+
+(fact (no-conflict (?any-r ?any-c) ()))
+(fact (no-conflict ?assign1 (?assign2 . ?rest-assign))
+      (not (conflict ?assign1 ?assign2))
+      (no-conflict ?assign1 ?rest-assign))
+
+(fact (conflict (?r1 ?c) (?r2 ?c))
+      (neighbor ?r1 ?r2))
+
+(fact (map-coloring ?map ?assignments)
+      (?map ?regions)
+      (coloring ?regions ?assignments))
+
+(query (map-coloring australia ?assignments))

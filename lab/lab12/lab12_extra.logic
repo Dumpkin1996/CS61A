@@ -1,0 +1,72 @@
+; Q3
+; Define the firsts relation here!
+(fact (first (?e . ?rest) ?e))
+(fact (firsts () ()))
+(fact (firsts (?first-lst . ?rest-lsts) (?first-firsts . ?rest-firsts))
+(first ?first-lst ?first-firsts)
+(firsts ?rest-lsts ?rest-firsts))
+
+
+; Q4
+; Define the rests relation here!
+(fact (rest (?e . ?rest) ?rest))
+(fact (rests () ()))
+(fact (rests (?first-lst . ?rest-lsts) (?first-rests . ?rest-rests))
+(rest ?first-lst ?first-rests)
+(rests ?rest-lsts ?rest-rests))
+
+; Q5-9
+(fact (insert ?a ?r (?a . ?r)))
+(fact (insert ?a (?b . ?r) (?b . ?s)) (insert ?a ?r ?s))
+
+(fact (anagram () ()))
+(fact (anagram (?a . ?r) ?b) (insert ?a ?s ?b) (anagram ?r ?s))
+
+(fact (boxes ((?a ?b ?c ?d)
+             (?e ?f ?g ?h)
+             (?i ?j ?k ?l)
+             (?m ?n ?o ?p)))
+    (anagram (?a ?b ?e ?f) (1 2 3 4))
+    (anagram (?i ?j ?m ?n) (1 2 3 4))
+    (anagram (?c ?d ?g ?h) (1 2 3 4))
+    (anagram (?k ?l ?o ?p) (1 2 3 4))
+                                    )
+
+(fact (rows ()))
+(fact (rows (?first-row . ?rest-rows))
+      (anagram ?first-row (1 2 3 4))
+      (rows ?rest-rows)
+      )
+
+(fact (cols (() () () ())))
+(fact (cols ?rows)
+      (firsts ?rows ?first-col)
+      (rests ?rows ?rest-cols)
+      (anagram ?first-col (1 2 3 4))
+      (cols ?rest-cols)
+      )
+
+(fact (solve ?grid)
+      (boxes ?grid)
+      (rows ?grid)
+      (cols ?grid)
+      )
+
+; Template for solving Sudoku, don't run this without
+; replacing some variables with numbers!
+
+; (query (solve ((?a ?b ?c ?d)
+;                (?e ?f ?g ?h)
+;                (?i ?j ?k ?l)
+;                (?m ?n ?o ?p))))
+
+(fact (equal ?x ?x))
+
+(fact (remove-all ?e () ()))
+
+(fact (remove-all ?e (?e . ?rest) ?remove-all-rest)
+(remove-all ?e ?rest ?remove-all-rest))
+
+(fact (remove-all ?e (?first . ?rest) (?first . ?remove-all-rest))
+(not (equal ?e ?first))
+(remove-all ?e ?rest ?remove-all-rest))

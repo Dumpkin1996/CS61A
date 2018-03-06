@@ -1,0 +1,54 @@
+(fact (insert ?a ?r (?a . ?r)))
+(fact (insert ?a (?b . ?r) (?b . ?s))
+      (insert ?a ?r ?s))
+
+(fact (anagram () ()))
+(fact (anagram (?a . ?r) ?b)
+      (insert ?a ?s ?b)
+      (anagram ?r ?s))
+
+; (query (anagram ?s (s t a r)))
+
+(fact (append () ?s ?s))
+(fact (append (?f . ?r) ?s (?f . ?t))
+      (append ?r ?s ?t))
+
+(fact (palindrome ?s)
+      (reverse ?s ?s))
+
+(fact (reverse () ()))
+(fact (reverse (?first . ?rest) ?rev)
+      (reverse ?rest ?rest-rev)
+      (append ?rest-rev (?first) ?rev))
+
+(fact (accrev (?first . ?rest) ?acc ?rev)
+      (accrev ?rest (?first . ?acc) ?rev))
+(fact (accrev () ?acc ?acc))
+(fact (accrev ?s ?rev)
+      (accrev ?s () ?rev))
+
+; NOTE: You may need to shrink the size of the list on your own interpreter
+; (query (reverse (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50) ?reversed))
+; (query (accrev (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50) ?reversed))
+
+(fact (+ 0 ?n ?n))
+(fact (+ (+ 1 ?x) ?y (+ 1 ?z))
+      (+ ?x ?y ?z))
+; (query (+ (+ 1 (+ 1 (+ 1 0))) (+ 1 (+ 1 0)) ?z))
+; (query (+ (+ 1 (+ 1 0)) (+ 1 (+ 1 (+ 1 0))) ?z))
+
+(fact (* 0 ?n 0))
+(fact (* (+ 1 ?x) ?y ?z)
+      (+ ?xy ?y ?z)
+      (* ?x ?y ?xy))
+; (query (* (+ 1 (+ 1 (+ 1 0))) (+ 1 (+ 1 (+ 1 (+ 1 0)))) ?z))
+; (query (* (+ 1 (+ 1 (+ 1 (+ 1 0)))) (+ 1 (+ 1 (+ 1 0))) ?z))
+
+(fact (- ?x ?y ?z)
+      (+ ?y ?z ?x))
+(fact (/ ?x ?y ?z)
+      (* ?y ?z ?x))
+; (query (- (+ 1 (+ 1 0)) (+ 1 0) ?z))
+; (query (/ (+ 1 (+ 1 (+ 1 (+ 1 0)))) (+ 1 (+ 1 0)) ?z))
+
+; (query (?op ?arg1 ?arg2 (+ 1 (+ 1 (+ 1 (+ 1 (+ 1 (+ 1 0))))))))
